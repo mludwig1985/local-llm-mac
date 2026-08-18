@@ -104,27 +104,6 @@ echo -e "  Size:   ${RECOMMENDED_SIZE} download / ${RECOMMENDED_RAM} RAM"
 echo -e "  Note:   ${RECOMMENDED_NOTE}"
 echo ""
 
-# ── Check existing Qwen installations ───────────────────────
-EXISTING_QWEN=$(ollama list 2>/dev/null | grep -i "qwen" | awk '{printf "  • %-30s %s %s\n", $1, $3, $4}' || true)
-
-if [[ -n "$EXISTING_QWEN" ]]; then
-  header "Qwen models already on this Mac"
-  echo "$EXISTING_QWEN"
-  echo ""
-  read -rp "  Install an additional model? (y/N): " ADD_MORE
-  if [[ ! "$ADD_MORE" =~ ^[yY]$ ]]; then
-    echo ""
-    success "Your existing models are ready to use."
-    echo ""
-    FIRST_MODEL=$(ollama list 2>/dev/null | grep -i "qwen" | head -1 | awk '{print $1}')
-    echo -e "  Start a session:  ${BOLD}ollama run ${FIRST_MODEL}${RESET}"
-    echo -e "  List all models:  ${BOLD}ollama list${RESET}"
-    echo ""
-    exit 0
-  fi
-  echo ""
-fi
-
 # ── Model selection ──────────────────────────────────────────
 header "Select a model"
 echo "  All available Qwen3 models:"
@@ -211,6 +190,27 @@ if ! curl -sf http://localhost:11434 &>/dev/null; then
   fi
 else
   success "Ollama is already running at http://localhost:11434"
+fi
+
+# ── Check existing Qwen installations (Ollama must be running) ───────────────
+EXISTING_QWEN=$(ollama list 2>/dev/null | grep -i "qwen" | awk '{printf "  • %-30s %s %s\n", $1, $3, $4}' || true)
+
+if [[ -n "$EXISTING_QWEN" ]]; then
+  header "Qwen models already on this Mac"
+  echo "$EXISTING_QWEN"
+  echo ""
+  read -rp "  Install an additional model? (y/N): " ADD_MORE
+  if [[ ! "$ADD_MORE" =~ ^[yY]$ ]]; then
+    echo ""
+    success "Your existing models are ready to use."
+    echo ""
+    FIRST_MODEL=$(ollama list 2>/dev/null | grep -i "qwen" | head -1 | awk '{print $1}')
+    echo -e "  Start a session:  ${BOLD}ollama run ${FIRST_MODEL}${RESET}"
+    echo -e "  List all models:  ${BOLD}ollama list${RESET}"
+    echo ""
+    exit 0
+  fi
+  echo ""
 fi
 
 # ── Step 2: Pull the Qwen model ──────────────────────────────
