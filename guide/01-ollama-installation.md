@@ -126,6 +126,27 @@ bash scripts/install-open-webui.sh
 
 ---
 
+## RAM usage while models are running
+
+Once a model is loaded, it stays in memory as long as Ollama is running —
+even when you are not actively chatting. On Macs with 8–16 GB RAM this
+can noticeably slow down other apps.
+
+**Free RAM when you're done:**
+
+```bash
+# Unload a specific model from memory (keeps it installed for next time):
+ollama stop qwen3:8b
+
+# See what is currently loaded:
+ollama ps
+```
+
+Ollama also unloads a model automatically after 5 minutes of inactivity
+(configurable via `OLLAMA_KEEP_ALIVE`).
+
+---
+
 ## Updating Ollama
 
 ```bash

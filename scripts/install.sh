@@ -56,7 +56,8 @@ if [[ $RAM_GB -le 8 ]]; then
   RECOMMENDED_SIZE="1.4 GB"
   RECOMMENDED_RAM="~2 GB"
   RECOMMENDED_NOTE="Good for chat, text summaries, and simple tasks."
-  warn "8 GB RAM — limited options. Qwen3-4B is possible but tight."
+  warn "8 GB RAM — the model will use a significant portion of your memory."
+  warn "Close other apps before running the model for best performance."
 
 elif [[ $RAM_GB -le 12 ]]; then
   RECOMMENDED_MODEL="qwen3:4b"
@@ -82,17 +83,47 @@ elif [[ $RAM_GB -le 48 ]]; then
   RECOMMENDED_RAM="~20 GB"
   RECOMMENDED_NOTE="MoE model: 30B quality at 3B inference speed. Hidden gem."
 
+elif [[ $RAM_GB -le 160 ]]; then
+  # Covers 64 / 96 / 128 GB Macs.
+  # qwen3:235b-a22b needs ~142 GB — does not fit in 128 GB.
+  RECOMMENDED_MODEL="qwen3:32b-q8_0"
+  RECOMMENDED_SIZE="35 GB"
+  RECOMMENDED_RAM="~36 GB"
+  RECOMMENDED_NOTE="Full quality (Q8) version of the 32B flagship. Best choice for 64–128 GB Macs."
+
 else
-  RECOMMENDED_MODEL="qwen3:32b"
-  RECOMMENDED_SIZE="20 GB"
-  RECOMMENDED_RAM="~22 GB"
-  RECOMMENDED_NOTE="Dense flagship for large Macs. Or qwen3:235b-a22b for 192 GB+."
+  # 192 GB+ (Mac Studio Ultra, Mac Pro Ultra)
+  RECOMMENDED_MODEL="qwen3:235b-a22b"
+  RECOMMENDED_SIZE="142 GB"
+  RECOMMENDED_RAM="~144 GB"
+  RECOMMENDED_NOTE="Flagship MoE model. Competes with GPT-4 class models."
 fi
 
 echo -e "  Model:  ${BOLD}${RECOMMENDED_MODEL}${RESET}"
 echo -e "  Size:   ${RECOMMENDED_SIZE} download / ${RECOMMENDED_RAM} RAM"
 echo -e "  Note:   ${RECOMMENDED_NOTE}"
 echo ""
+
+# ── Check existing Qwen installations ───────────────────────
+EXISTING_QWEN=$(ollama list 2>/dev/null | grep -i "qwen" | awk '{printf "  • %-30s %s\n", $1, $3}' || true)
+
+if [[ -n "$EXISTING_QWEN" ]]; then
+  header "Qwen models already on this Mac"
+  echo "$EXISTING_QWEN"
+  echo ""
+  read -rp "  Install an additional model? (y/N): " ADD_MORE
+  if [[ ! "$ADD_MORE" =~ ^[yY]$ ]]; then
+    echo ""
+    success "Your existing models are ready to use."
+    echo ""
+    FIRST_MODEL=$(ollama list 2>/dev/null | grep -i "qwen" | head -1 | awk '{print $1}')
+    echo -e "  Start a session:  ${BOLD}ollama run ${FIRST_MODEL}${RESET}"
+    echo -e "  List all models:  ${BOLD}ollama list${RESET}"
+    echo ""
+    exit 0
+  fi
+  echo ""
+fi
 
 # ── Model selection ──────────────────────────────────────────
 header "Select a model"
@@ -105,19 +136,23 @@ echo "  4)  qwen3:8b      —   5.2 GB,  ~6 GB RAM   (Standard)"
 echo "  5)  qwen3:14b     —   9.3 GB, ~10 GB RAM   (Strong)"
 echo "  6)  qwen3:30b-a3b —    19 GB, ~20 GB RAM   (MoE, recommended for 32 GB+)"
 echo "  7)  qwen3:32b     —    20 GB, ~22 GB RAM   (Dense flagship)"
+echo "  8)  qwen3:32b-q8_0   —  35 GB, ~36 GB RAM   (Dense flagship, full quality)"
+echo "  9)  qwen3:235b-a22b  — 142 GB, ~144 GB RAM  (MoE flagship, 192 GB+ Macs only)"
 echo ""
 echo -e "  Recommended for your Mac: ${BOLD}${RECOMMENDED_MODEL}${RESET}"
 echo ""
-read -rp "  Enter choice (1-7) or press Enter for recommendation: " CHOICE
+read -rp "  Enter choice (1-9) or press Enter for recommendation: " CHOICE
 
 case "$CHOICE" in
-  1) MODEL="qwen3:0.6b"     ;;
-  2) MODEL="qwen3:1.7b"     ;;
-  3) MODEL="qwen3:4b"       ;;
-  4) MODEL="qwen3:8b"       ;;
-  5) MODEL="qwen3:14b"      ;;
-  6) MODEL="qwen3:30b-a3b"  ;;
-  7) MODEL="qwen3:32b"      ;;
+  1) MODEL="qwen3:0.6b"       ;;
+  2) MODEL="qwen3:1.7b"       ;;
+  3) MODEL="qwen3:4b"         ;;
+  4) MODEL="qwen3:8b"         ;;
+  5) MODEL="qwen3:14b"        ;;
+  6) MODEL="qwen3:30b-a3b"    ;;
+  7) MODEL="qwen3:32b"        ;;
+  8) MODEL="qwen3:32b-q8_0"   ;;
+  9) MODEL="qwen3:235b-a22b"  ;;
   *) MODEL="$RECOMMENDED_MODEL" ;;
 esac
 
@@ -220,4 +255,15 @@ if [[ "$INSTALL_WEBUI" =~ ^[yY]$ ]]; then
 fi
 echo -e "  Tip: Prefix your prompt with ${BOLD}/think${RESET} to activate"
 echo -e "  Thinking mode for more thorough reasoning."
+echo ""
+echo -e "${YELLOW}  ⚠  RAM note:${RESET} Once loaded, the model stays in memory as long"
+echo    "     as Ollama is running — even when you're not actively chatting."
+if [[ $RAM_GB -le 16 ]]; then
+  echo -e "     ${BOLD}On your ${RAM_GB} GB Mac this is especially noticeable.${RESET}"
+  echo    "     Close other apps for the best experience."
+fi
+echo ""
+echo    "     Free RAM when done:"
+echo -e "     ${BOLD}ollama stop ${MODEL}${RESET}   — unload model from memory"
+echo -e "     ${BOLD}ollama list${RESET}             — see what is loaded"
 echo ""

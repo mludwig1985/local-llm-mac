@@ -20,6 +20,10 @@ In dense models, all parameters are active for every request.
 | Qwen3-8B | 5.2 GB | ~6 GB | 40K | `ollama run qwen3:8b` |
 | Qwen3-14B | 9.3 GB | ~10 GB | 40K | `ollama run qwen3:14b` |
 | Qwen3-32B | 20 GB | ~22 GB | 40K | `ollama run qwen3:32b` |
+| Qwen3-32B Q8 | 35 GB | ~36 GB | 40K | `ollama run qwen3:32b-q8_0` |
+
+> **Q8 vs Q4:** `qwen3:32b-q8_0` is the full-precision version — same model, significantly better
+> output quality. If your Mac has 64 GB+, always prefer Q8 over the default Q4.
 
 ### MoE models (Mixture of Experts)
 
