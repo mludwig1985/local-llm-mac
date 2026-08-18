@@ -3,6 +3,6 @@
 .AppleDouble
 .LSOverride
 
-# Eigene Notizen (nicht committen)
+# Personal notes (not committed)
 notes/
 *.local.md

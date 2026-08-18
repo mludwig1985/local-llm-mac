@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
-# Open WebUI installieren (Chat-Oberfläche für Ollama)
-# Voraussetzung: Docker Desktop muss laufen
-# Verwendung: bash scripts/install-open-webui.sh
+# Install Open WebUI (browser chat interface for Ollama)
+# Requires: Docker Desktop must be running
+# Usage: bash scripts/install-open-webui.sh
 # ============================================================
 
 set -euo pipefail
@@ -14,56 +14,56 @@ success() { echo -e "${GREEN}✓${RESET}  $*"; }
 warn()    { echo -e "${YELLOW}⚠${RESET}  $*"; }
 
 echo ""
-echo -e "${BOLD}Open WebUI installieren${RESET}"
+echo -e "${BOLD}Install Open WebUI${RESET}"
 echo "──────────────────────────────────"
 
-# Docker prüfen
+# Check Docker
 if ! command -v docker &>/dev/null; then
-  warn "Docker ist nicht installiert."
+  warn "Docker is not installed."
   echo ""
-  echo "  Bitte Docker Desktop installieren:"
+  echo "  Install Docker Desktop first:"
   echo "  https://www.docker.com/products/docker-desktop"
   echo ""
-  echo "  Danach dieses Skript erneut ausführen."
+  echo "  Then re-run this script."
   exit 1
 fi
 
 if ! docker info &>/dev/null 2>&1; then
-  warn "Docker läuft nicht. Bitte Docker Desktop starten."
+  warn "Docker is not running. Please start Docker Desktop."
   echo ""
-  echo "  Docker Desktop öffnen → Warten bis der Wal-Icon in der Menüleiste erscheint."
-  echo "  Dann erneut ausführen: bash scripts/install-open-webui.sh"
+  echo "  Open Docker Desktop and wait for the whale icon in the menu bar."
+  echo "  Then re-run: bash scripts/install-open-webui.sh"
   exit 1
 fi
 
-success "Docker läuft."
+success "Docker is running."
 
-# Ollama prüfen
+# Check Ollama
 if ! curl -sf http://localhost:11434 &>/dev/null; then
-  warn "Ollama läuft nicht auf localhost:11434."
-  warn "Bitte Ollama zuerst starten, dann Open WebUI installieren."
+  warn "Ollama is not running at localhost:11434."
+  warn "Please start Ollama first, then install Open WebUI."
   exit 1
 fi
 
-success "Ollama ist erreichbar."
+success "Ollama is reachable."
 
-# Bereits installiert?
+# Already installed?
 if docker ps -a --format '{{.Names}}' | grep -q "^open-webui$"; then
   if docker ps --format '{{.Names}}' | grep -q "^open-webui$"; then
-    success "Open WebUI läuft bereits auf http://localhost:3000"
+    success "Open WebUI is already running at http://localhost:3000"
     exit 0
   else
-    info "Open WebUI-Container existiert aber läuft nicht — starte neu..."
+    info "Open WebUI container exists but is not running — restarting..."
     docker start open-webui
-    success "Open WebUI gestartet."
+    success "Open WebUI started."
     echo ""
-    echo -e "  Öffne im Browser: ${BOLD}http://localhost:3000${RESET}"
+    echo -e "  Open in browser: ${BOLD}http://localhost:3000${RESET}"
     exit 0
   fi
 fi
 
-# Open WebUI installieren
-info "Lade Open WebUI herunter (~1 GB) und starte Container..."
+# Install Open WebUI
+info "Downloading Open WebUI (~1 GB) and starting container..."
 
 docker run -d \
   -p 3000:8080 \
@@ -73,8 +73,8 @@ docker run -d \
   --restart always \
   ghcr.io/open-webui/open-webui:main
 
-# Warten bis erreichbar
-info "Warte auf Open WebUI..."
+# Wait until reachable
+info "Waiting for Open WebUI to start..."
 for i in $(seq 1 30); do
   if curl -sf http://localhost:3000 &>/dev/null; then
     break
@@ -83,21 +83,21 @@ for i in $(seq 1 30); do
 done
 
 echo ""
-success "Open WebUI erfolgreich installiert!"
+success "Open WebUI installed successfully!"
 echo ""
-echo -e "  Öffne im Browser: ${BOLD}http://localhost:3000${RESET}"
+echo -e "  Open in browser: ${BOLD}http://localhost:3000${RESET}"
 echo ""
-echo "  Beim ersten Aufruf einen lokalen Admin-Account anlegen."
-echo "  (Bleibt komplett lokal — kein echter Account nötig.)"
+echo "  On first visit: create a local admin account."
+echo "  (Stays completely local — no real account needed.)"
 echo ""
-echo -e "  Open WebUI verwalten:"
-echo -e "  ${BOLD}docker stop open-webui${RESET}    — stoppen"
-echo -e "  ${BOLD}docker start open-webui${RESET}   — starten"
-echo -e "  ${BOLD}docker rm open-webui${RESET}      — entfernen"
+echo -e "  Manage Open WebUI:"
+echo -e "  ${BOLD}docker stop open-webui${RESET}    — stop"
+echo -e "  ${BOLD}docker start open-webui${RESET}   — start"
+echo -e "  ${BOLD}docker rm open-webui${RESET}      — remove"
 echo ""
 
-# Browser öffnen
-read -rp "  Browser jetzt öffnen? (J/n): " OPEN_BROWSER
+# Open browser
+read -rp "  Open browser now? (Y/n): " OPEN_BROWSER
 if [[ ! "$OPEN_BROWSER" =~ ^[nN]$ ]]; then
   open "http://localhost:3000"
 fi

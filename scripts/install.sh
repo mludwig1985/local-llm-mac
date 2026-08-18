@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
-# localLLM — Interaktiver Installer für Ollama + Qwen auf Mac
-# Verwendung: bash scripts/install.sh
+# localLLM — Interactive installer for Ollama + Qwen on Mac
+# Usage: bash scripts/install.sh
 # ============================================================
 
 set -euo pipefail
 
-# ── Farben ──────────────────────────────────────────────────
+# ── Colors ──────────────────────────────────────────────────
 BOLD='\033[1m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -14,23 +14,23 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 RESET='\033[0m'
 
-# ── Hilfsfunktionen ─────────────────────────────────────────
+# ── Helpers ─────────────────────────────────────────────────
 info()    { echo -e "${BLUE}▶${RESET}  $*"; }
 success() { echo -e "${GREEN}✓${RESET}  $*"; }
 warn()    { echo -e "${YELLOW}⚠${RESET}  $*"; }
 error()   { echo -e "${RED}✗${RESET}  $*"; exit 1; }
 header()  { echo -e "\n${BOLD}$*${RESET}"; echo "────────────────────────────────────"; }
 
-# ── Plattform prüfen ────────────────────────────────────────
+# ── Platform check ──────────────────────────────────────────
 if [[ "$(uname)" != "Darwin" ]]; then
-  error "Dieses Skript läuft nur auf macOS."
+  error "This script only runs on macOS."
 fi
 
-# ── RAM ermitteln ────────────────────────────────────────────
+# ── Detect RAM ──────────────────────────────────────────────
 RAM_BYTES=$(sysctl -n hw.memsize)
 RAM_GB=$(( RAM_BYTES / 1073741824 ))
 
-# ── Chip-Architektur ─────────────────────────────────────────
+# ── Detect chip architecture ─────────────────────────────────
 ARCH=$(uname -m)
 if [[ "$ARCH" == "arm64" ]]; then
   CHIP_INFO="Apple Silicon (ARM)"
@@ -48,67 +48,67 @@ echo -e "  Mac:   ${CHIP_INFO}"
 echo -e "  RAM:   ${BOLD}${RAM_GB} GB${RESET}"
 echo ""
 
-# ── Modell-Empfehlung basierend auf RAM ──────────────────────
-header "Empfehlung für deinen Mac"
+# ── Model recommendation based on RAM ───────────────────────
+header "Recommendation for your Mac"
 
 if [[ $RAM_GB -le 8 ]]; then
   RECOMMENDED_MODEL="qwen3:1.7b"
-  RECOMMENDED_SIZE="1,4 GB"
+  RECOMMENDED_SIZE="1.4 GB"
   RECOMMENDED_RAM="~2 GB"
-  RECOMMENDED_NOTE="Geeignet für Chat, Textzusammenfassungen, einfache Aufgaben."
-  warn "8 GB RAM — eingeschränkte Auswahl. Qwen3-4B ist möglich aber eng."
+  RECOMMENDED_NOTE="Good for chat, text summaries, and simple tasks."
+  warn "8 GB RAM — limited options. Qwen3-4B is possible but tight."
 
 elif [[ $RAM_GB -le 12 ]]; then
   RECOMMENDED_MODEL="qwen3:4b"
-  RECOMMENDED_SIZE="2,5 GB"
+  RECOMMENDED_SIZE="2.5 GB"
   RECOMMENDED_RAM="~3 GB"
-  RECOMMENDED_NOTE="Exzellentes Qualitäts-/Größen-Verhältnis. Schnell und vielseitig."
+  RECOMMENDED_NOTE="Excellent quality/size ratio. Fast and versatile."
 
 elif [[ $RAM_GB -le 20 ]]; then
   RECOMMENDED_MODEL="qwen3:8b"
-  RECOMMENDED_SIZE="5,2 GB"
+  RECOMMENDED_SIZE="5.2 GB"
   RECOMMENDED_RAM="~6 GB"
-  RECOMMENDED_NOTE="Sweet Spot für 16 GB Macs. Stark für Code, Chat und Analysen."
+  RECOMMENDED_NOTE="Sweet spot for 16 GB Macs. Great for code, chat, and analysis."
 
 elif [[ $RAM_GB -le 28 ]]; then
   RECOMMENDED_MODEL="qwen3:14b"
-  RECOMMENDED_SIZE="9,3 GB"
+  RECOMMENDED_SIZE="9.3 GB"
   RECOMMENDED_RAM="~10 GB"
-  RECOMMENDED_NOTE="Hervorragende Qualität. Besonders stark mit /think-Modus."
+  RECOMMENDED_NOTE="Excellent quality. Especially strong with /think mode."
 
 elif [[ $RAM_GB -le 48 ]]; then
   RECOMMENDED_MODEL="qwen3:30b-a3b"
   RECOMMENDED_SIZE="19 GB"
   RECOMMENDED_RAM="~20 GB"
-  RECOMMENDED_NOTE="MoE-Modell: Qualität eines 30B-Modells, Geschwindigkeit eines 3B-Modells."
+  RECOMMENDED_NOTE="MoE model: 30B quality at 3B inference speed. Hidden gem."
 
 else
   RECOMMENDED_MODEL="qwen3:32b"
   RECOMMENDED_SIZE="20 GB"
   RECOMMENDED_RAM="~22 GB"
-  RECOMMENDED_NOTE="Dense-Flaggschiff für große Macs. Oder qwen3:235b-a22b für 192 GB+."
+  RECOMMENDED_NOTE="Dense flagship for large Macs. Or qwen3:235b-a22b for 192 GB+."
 fi
 
-echo -e "  Modell:  ${BOLD}${RECOMMENDED_MODEL}${RESET}"
-echo -e "  Größe:   ${RECOMMENDED_SIZE} Download / ${RECOMMENDED_RAM} RAM"
-echo -e "  Hinweis: ${RECOMMENDED_NOTE}"
+echo -e "  Model:  ${BOLD}${RECOMMENDED_MODEL}${RESET}"
+echo -e "  Size:   ${RECOMMENDED_SIZE} download / ${RECOMMENDED_RAM} RAM"
+echo -e "  Note:   ${RECOMMENDED_NOTE}"
 echo ""
 
-# ── Modell-Auswahl bestätigen oder ändern ────────────────────
-header "Modell auswählen"
-echo "  Alle verfügbaren Qwen3-Modelle:"
+# ── Model selection ──────────────────────────────────────────
+header "Select a model"
+echo "  All available Qwen3 models:"
 echo ""
-echo "  1)  qwen3:0.6b   —  523 MB,  ~1 GB RAM   (Minimal)"
-echo "  2)  qwen3:1.7b   —  1,4 GB,  ~2 GB RAM   (Klein)"
-echo "  3)  qwen3:4b     —  2,5 GB,  ~3 GB RAM   (Kompakt, sehr gut)"
-echo "  4)  qwen3:8b     —  5,2 GB,  ~6 GB RAM   (Standard)"
-echo "  5)  qwen3:14b    —  9,3 GB, ~10 GB RAM   (Stark)"
-echo "  6)  qwen3:30b-a3b — 19 GB,  ~20 GB RAM   (MoE, empfohlen für 32 GB+)"
-echo "  7)  qwen3:32b    —   20 GB, ~22 GB RAM   (Dense-Flaggschiff)"
+echo "  1)  qwen3:0.6b    —   523 MB,  ~1 GB RAM   (Minimal)"
+echo "  2)  qwen3:1.7b    —   1.4 GB,  ~2 GB RAM   (Small)"
+echo "  3)  qwen3:4b      —   2.5 GB,  ~3 GB RAM   (Compact, very good)"
+echo "  4)  qwen3:8b      —   5.2 GB,  ~6 GB RAM   (Standard)"
+echo "  5)  qwen3:14b     —   9.3 GB, ~10 GB RAM   (Strong)"
+echo "  6)  qwen3:30b-a3b —    19 GB, ~20 GB RAM   (MoE, recommended for 32 GB+)"
+echo "  7)  qwen3:32b     —    20 GB, ~22 GB RAM   (Dense flagship)"
 echo ""
-echo -e "  Empfehlung für deinen Mac: ${BOLD}${RECOMMENDED_MODEL}${RESET}"
+echo -e "  Recommended for your Mac: ${BOLD}${RECOMMENDED_MODEL}${RESET}"
 echo ""
-read -rp "  Wahl eingeben (1-7) oder Enter für Empfehlung: " CHOICE
+read -rp "  Enter choice (1-7) or press Enter for recommendation: " CHOICE
 
 case "$CHOICE" in
   1) MODEL="qwen3:0.6b"     ;;
@@ -122,108 +122,102 @@ case "$CHOICE" in
 esac
 
 echo ""
-info "Gewähltes Modell: ${BOLD}${MODEL}${RESET}"
+info "Selected model: ${BOLD}${MODEL}${RESET}"
 
-# ── Schritt 1: Ollama installieren ───────────────────────────
-header "Schritt 1: Ollama installieren"
+# ── Step 1: Install Ollama ───────────────────────────────────
+header "Step 1: Install Ollama"
 
 if command -v ollama &>/dev/null; then
   OLLAMA_VERSION=$(ollama --version 2>/dev/null | head -1)
-  success "Ollama ist bereits installiert: ${OLLAMA_VERSION}"
+  success "Ollama is already installed: ${OLLAMA_VERSION}"
 else
-  info "Ollama wird installiert..."
+  info "Installing Ollama..."
 
   if command -v brew &>/dev/null; then
-    info "Homebrew gefunden — installiere Ollama App via Homebrew..."
+    info "Homebrew found — installing Ollama App via Homebrew Cask..."
     brew install --cask ollama
-    success "Ollama App installiert. Starte Ollama aus dem Programme-Ordner."
-    info "Öffne Ollama jetzt..."
+    success "Ollama App installed."
+    info "Launching Ollama..."
     open -a Ollama 2>/dev/null || open /Applications/Ollama.app 2>/dev/null || true
-    info "Warte 5 Sekunden bis Ollama startet..."
+    info "Waiting 5 seconds for Ollama to start..."
     sleep 5
   else
-    warn "Homebrew ist nicht installiert."
+    warn "Homebrew is not installed."
     echo ""
-    echo "  Option 1 (empfohlen): Homebrew installieren:"
+    echo "  Option 1 (recommended): Install Homebrew first:"
     echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-    echo "  Danach: bash scripts/install.sh"
+    echo "  Then re-run: bash scripts/install.sh"
     echo ""
-    echo "  Option 2: Ollama App manuell herunterladen:"
+    echo "  Option 2: Download Ollama App manually:"
     echo "  https://ollama.com/download"
     echo ""
-    info "Öffne Download-Seite im Browser..."
+    info "Opening download page in browser..."
     open "https://ollama.com/download"
     echo ""
-    read -rp "  Drücke Enter sobald Ollama installiert und gestartet ist..." _
+    read -rp "  Press Enter once Ollama is installed and running..." _
   fi
 fi
 
-# ── Ollama-Dienst starten ────────────────────────────────────
-info "Prüfe ob Ollama läuft..."
+# ── Check Ollama is running ──────────────────────────────────
+info "Checking if Ollama is running..."
 
 if ! curl -sf http://localhost:11434 &>/dev/null; then
-  info "Starte Ollama im Hintergrund..."
+  info "Starting Ollama in the background..."
   ollama serve &>/dev/null &
   sleep 3
 
   if curl -sf http://localhost:11434 &>/dev/null; then
-    success "Ollama läuft auf http://localhost:11434"
+    success "Ollama is running at http://localhost:11434"
   else
-    warn "Ollama konnte nicht automatisch gestartet werden."
-    warn "Bitte starte die Ollama-App manuell aus dem Programme-Ordner."
+    warn "Could not start Ollama automatically."
+    warn "Please launch the Ollama App from your Applications folder."
     echo ""
-    read -rp "  Drücke Enter sobald Ollama läuft..." _
+    read -rp "  Press Enter once Ollama is running..." _
   fi
 else
-  success "Ollama läuft bereits auf http://localhost:11434"
+  success "Ollama is already running at http://localhost:11434"
 fi
 
-# ── Schritt 2: Qwen-Modell herunterladen ────────────────────
-header "Schritt 2: ${MODEL} herunterladen"
+# ── Step 2: Pull the Qwen model ──────────────────────────────
+header "Step 2: Download ${MODEL}"
 
-if ollama list 2>/dev/null | grep -q "^${MODEL%%:*}"; then
-  if ollama list 2>/dev/null | grep -q "${MODEL}"; then
-    success "${MODEL} ist bereits installiert."
-  else
-    info "Lade ${MODEL} herunter..."
-    ollama pull "$MODEL"
-    success "${MODEL} erfolgreich installiert."
-  fi
+if ollama list 2>/dev/null | grep -q "${MODEL}"; then
+  success "${MODEL} is already installed."
 else
-  info "Lade ${MODEL} herunter (das kann je nach Verbindung einige Minuten dauern)..."
+  info "Downloading ${MODEL} — this may take a few minutes depending on your connection..."
   ollama pull "$MODEL"
-  success "${MODEL} erfolgreich installiert."
+  success "${MODEL} installed successfully."
 fi
 
-# ── Schritt 3: Open WebUI (optional) ────────────────────────
-header "Schritt 3: Open WebUI (optional)"
-echo "  Open WebUI ist eine ChatGPT-ähnliche Oberfläche für deine lokalen Modelle."
-echo "  Voraussetzung: Docker Desktop muss installiert und gestartet sein."
+# ── Step 3: Open WebUI (optional) ────────────────────────────
+header "Step 3: Open WebUI (optional)"
+echo "  Open WebUI is a ChatGPT-style browser interface for your local models."
+echo "  Requires: Docker Desktop must be installed and running."
 echo ""
-read -rp "  Open WebUI installieren? (j/N): " INSTALL_WEBUI
+read -rp "  Install Open WebUI? (y/N): " INSTALL_WEBUI
 
-if [[ "$INSTALL_WEBUI" =~ ^[jJyY]$ ]]; then
+if [[ "$INSTALL_WEBUI" =~ ^[yY]$ ]]; then
   bash "$(dirname "$0")/install-open-webui.sh"
 fi
 
-# ── Fertig ───────────────────────────────────────────────────
+# ── Done ─────────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}║              Installation fertig!        ║${RESET}"
+echo -e "${BOLD}║           Installation complete!         ║${RESET}"
 echo -e "${BOLD}╚══════════════════════════════════════════╝${RESET}"
 echo ""
-echo -e "  Modell starten:"
+echo -e "  Start your model:"
 echo -e "  ${BOLD}ollama run ${MODEL}${RESET}"
 echo ""
-echo -e "  Nützliche Befehle:"
-echo -e "  ${BOLD}ollama list${RESET}           — installierte Modelle"
-echo -e "  ${BOLD}ollama pull qwen3:Xb${RESET}  — weiteres Modell laden"
-echo -e "  ${BOLD}ollama rm qwen3:Xb${RESET}    — Modell entfernen"
+echo -e "  Useful commands:"
+echo -e "  ${BOLD}ollama list${RESET}           — show installed models"
+echo -e "  ${BOLD}ollama pull qwen3:Xb${RESET}  — download another model"
+echo -e "  ${BOLD}ollama rm qwen3:Xb${RESET}    — remove a model"
 echo ""
-if [[ "$INSTALL_WEBUI" =~ ^[jJyY]$ ]]; then
-  echo -e "  Chat-Oberfläche: ${BOLD}http://localhost:3000${RESET}"
+if [[ "$INSTALL_WEBUI" =~ ^[yY]$ ]]; then
+  echo -e "  Chat interface: ${BOLD}http://localhost:3000${RESET}"
   echo ""
 fi
-echo -e "  Tipp: Mit ${BOLD}/think${RESET} vor deiner Frage aktivierst du den"
-echo -e "  Thinking-Modus für komplexere Analysen."
+echo -e "  Tip: Prefix your prompt with ${BOLD}/think${RESET} to activate"
+echo -e "  Thinking mode for more thorough reasoning."
 echo ""
