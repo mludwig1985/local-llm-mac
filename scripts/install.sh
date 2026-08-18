@@ -134,14 +134,27 @@ else
   info "Ollama wird installiert..."
 
   if command -v brew &>/dev/null; then
-    info "Homebrew gefunden — installiere über Homebrew..."
-    brew install ollama
-    brew services start ollama
-    success "Ollama via Homebrew installiert und gestartet."
+    info "Homebrew gefunden — installiere Ollama App via Homebrew..."
+    brew install --cask ollama
+    success "Ollama App installiert. Starte Ollama aus dem Programme-Ordner."
+    info "Öffne Ollama jetzt..."
+    open -a Ollama 2>/dev/null || open /Applications/Ollama.app 2>/dev/null || true
+    info "Warte 5 Sekunden bis Ollama startet..."
+    sleep 5
   else
-    info "Installiere Ollama via offiziellem Installer..."
-    curl -fsSL https://ollama.com/install.sh | sh
-    success "Ollama installiert."
+    warn "Homebrew ist nicht installiert."
+    echo ""
+    echo "  Option 1 (empfohlen): Homebrew installieren:"
+    echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    echo "  Danach: bash scripts/install.sh"
+    echo ""
+    echo "  Option 2: Ollama App manuell herunterladen:"
+    echo "  https://ollama.com/download"
+    echo ""
+    info "Öffne Download-Seite im Browser..."
+    open "https://ollama.com/download"
+    echo ""
+    read -rp "  Drücke Enter sobald Ollama installiert und gestartet ist..." _
   fi
 fi
 

@@ -1,132 +1,132 @@
-# Qwen-Modelle im Überblick
+# Qwen3 Models Overview
 
-Qwen ist eine Modellfamilie von Alibaba. Für den lokalen Einsatz ist die
-aktuelle **Qwen3**-Generation am besten geeignet — starke Qualität,
-Apache 2.0-Lizenz, native Ollama-Unterstützung.
+Qwen is a model family from Alibaba. The current **Qwen3** generation is the
+best choice for local use — strong quality, Apache 2.0 license, and native
+Ollama support.
 
 ---
 
-## Alle Qwen3-Modelle auf Ollama
+## All Qwen3 models on Ollama
 
-### Dense-Modelle (Standard)
+### Dense models (standard)
 
-Bei Dense-Modellen sind alle Parameter bei jeder Anfrage aktiv.
+In dense models, all parameters are active for every request.
 
-| Modell | Download | RAM-Bedarf | Kontext | Ollama-Befehl |
-|--------|----------|------------|---------|---------------|
+| Model | Download | RAM needed | Context | Command |
+|-------|----------|------------|---------|---------|
 | Qwen3-0.6B | 523 MB | ~1 GB | 40K | `ollama run qwen3:0.6b` |
-| Qwen3-1.7B | 1,4 GB | ~2 GB | 40K | `ollama run qwen3:1.7b` |
-| Qwen3-4B | 2,5 GB | ~3 GB | 256K | `ollama run qwen3:4b` |
-| Qwen3-8B | 5,2 GB | ~6 GB | 40K | `ollama run qwen3:8b` |
-| Qwen3-14B | 9,3 GB | ~10 GB | 40K | `ollama run qwen3:14b` |
+| Qwen3-1.7B | 1.4 GB | ~2 GB | 40K | `ollama run qwen3:1.7b` |
+| Qwen3-4B | 2.5 GB | ~3 GB | 256K | `ollama run qwen3:4b` |
+| Qwen3-8B | 5.2 GB | ~6 GB | 40K | `ollama run qwen3:8b` |
+| Qwen3-14B | 9.3 GB | ~10 GB | 40K | `ollama run qwen3:14b` |
 | Qwen3-32B | 20 GB | ~22 GB | 40K | `ollama run qwen3:32b` |
 
-### MoE-Modelle (Mixture of Experts)
+### MoE models (Mixture of Experts)
 
-MoE-Modelle haben viele Parameter, aktivieren aber pro Anfrage nur einen
-Bruchteil davon. Ergebnis: Qualität eines großen Modells bei Geschwindigkeit
-eines kleinen.
+MoE models have many parameters, but only activate a fraction per request.
+Result: quality of a large model at the speed of a small one.
 
-| Modell | Gesamt / Aktiv | Download | RAM-Bedarf | Kontext | Ollama-Befehl |
-|--------|---------------|----------|------------|---------|---------------|
+| Model | Total / Active | Download | RAM needed | Context | Command |
+|-------|---------------|----------|------------|---------|---------|
 | Qwen3-30B-A3B | 30B / 3B | 19 GB | ~20 GB | 256K | `ollama run qwen3:30b-a3b` |
 | Qwen3-235B-A22B | 235B / 22B | 142 GB | ~144 GB | 256K | `ollama run qwen3:235b-a22b` |
 
-> **Tipp:** `qwen3:30b-a3b` ist das Hidden Gem der Familie — es übertrifft
-> in der Qualität oft 32B-Dense-Modelle, läuft aber mit der Geschwindigkeit
-> eines 3B-Modells. Für 32GB-Macs die beste Wahl.
+> **Tip:** `qwen3:30b-a3b` is the hidden gem of the family — it often
+> outperforms 32B dense models while running at the speed of a 3B model.
+> The top pick for 32 GB Macs.
 
 ---
 
-## Thinking-Modus (Qwen3-Feature)
+## Thinking mode (Qwen3 exclusive)
 
-Qwen3 hat einen eingebauten "Thinking"-Modus: Das Modell denkt vor der
-Antwort nach (ähnlich wie o1 von OpenAI), was bei komplexen Aufgaben die
-Qualität deutlich steigert.
+Qwen3 has a built-in "Thinking" mode: the model reasons step-by-step before
+answering, similar to OpenAI o1. This significantly improves quality on
+complex tasks.
 
 ```bash
-# Thinking-Modus aktivieren (in der Anfrage):
+# Start a model session:
 ollama run qwen3:8b
-# Dann in der Eingabe:
-/think Erkläre den Unterschied zwischen TCP und UDP
 
-# Thinking deaktivieren (schnellere Antworten):
-/no_think Was ist die Hauptstadt von Frankreich?
+# Enable Thinking mode (prefix your prompt):
+/think Explain the difference between TCP and UDP
+
+# Disable Thinking (faster responses):
+/no_think What is the capital of France?
 ```
 
 ---
 
-## Quantisierung verstehen
+## Understanding quantization
 
-Ollama lädt standardmäßig Q4_K_M-Quantisierungen herunter — ein guter
-Kompromiss zwischen Qualität und Größe.
+Ollama downloads Q4_K_M quantizations by default — a good balance between
+quality and size.
 
-| Quantisierung | Qualität | Größe | Wann nutzen |
-|---------------|----------|-------|-------------|
-| Q2_K | ⭐⭐ | Sehr klein | Nur wenn RAM extrem knapp |
-| Q4_K_M | ⭐⭐⭐⭐ | Mittel | Standard — guter Kompromiss |
-| Q5_K_M | ⭐⭐⭐⭐½ | Groß | Wenn RAM übrig ist |
-| Q8_0 | ⭐⭐⭐⭐⭐ | Sehr groß | Maximale Qualität |
+| Quantization | Quality | Size | When to use |
+|--------------|---------|------|-------------|
+| Q2_K | ⭐⭐ | Very small | Only when RAM is extremely limited |
+| Q4_K_M | ⭐⭐⭐⭐ | Medium | Default — good balance |
+| Q5_K_M | ⭐⭐⭐⭐½ | Large | When you have RAM to spare |
+| Q8_0 | ⭐⭐⭐⭐⭐ | Very large | Maximum quality |
 
 ```bash
-# Andere Quantisierung explizit wählen:
-ollama run qwen3:8b:q8_0    # Volle Qualität, ~9 GB
-ollama run qwen3:8b:q4_K_M  # Standard (Default)
+# Choose a specific quantization:
+ollama run qwen3:8b-q8_0    # Full quality, ~9 GB
+ollama run qwen3:8b-q4_K_M  # Default
 ```
 
 ---
 
-## Wofür ist Qwen3 gut?
+## What is Qwen3 good at?
 
-| Aufgabe | Geeignetes Modell |
-|---------|------------------|
-| Allgemeiner Chat | Qwen3-4B bis Qwen3-14B |
-| Code schreiben/erklären | Qwen3-8B+ |
-| Komplexe Analysen | Qwen3-14B+ (mit /think) |
-| Texte zusammenfassen | Qwen3-4B (reicht völlig) |
-| Lange Dokumente | Qwen3-4B oder Qwen3-30B-A3B (256K Kontext) |
-| KI-Agenten | Qwen3-8B+ |
+| Task | Recommended model |
+|------|------------------|
+| General chat | Qwen3-4B to Qwen3-14B |
+| Writing / explaining code | Qwen3-8B+ |
+| Complex analysis | Qwen3-14B+ (with /think) |
+| Summarizing text | Qwen3-4B (more than enough) |
+| Long documents | Qwen3-4B or Qwen3-30B-A3B (256K context) |
+| AI agents | Qwen3-8B+ |
 
 ---
 
-## Qwen-API mit Ollama nutzen
+## Using the Ollama API
 
-Ollama stellt eine OpenAI-kompatible API bereit — du kannst es überall
-einsetzen wo du sonst die OpenAI-API nutzt:
+Ollama exposes an OpenAI-compatible API — use it anywhere you would otherwise
+use the OpenAI API:
 
 ```bash
-# Direkte API-Anfrage:
+# Direct API call:
 curl http://localhost:11434/api/generate \
-  -d '{"model": "qwen3:8b", "prompt": "Was ist Docker?", "stream": false}'
+  -d '{"model": "qwen3:8b", "prompt": "What is Docker?", "stream": false}'
 
-# OpenAI-kompatibler Endpunkt:
+# OpenAI-compatible endpoint:
 curl http://localhost:11434/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "qwen3:8b",
-    "messages": [{"role": "user", "content": "Was ist Docker?"}]
+    "messages": [{"role": "user", "content": "What is an AI agent?"}]
   }'
 ```
 
-In Python (mit openai-Bibliothek):
+In Python (using the `openai` library):
 
 ```python
 from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:11434/v1",
-    api_key="ollama"  # beliebiger Wert, wird ignoriert
+    api_key="ollama"  # any value works, it's ignored
 )
 
 response = client.chat.completions.create(
     model="qwen3:8b",
-    messages=[{"role": "user", "content": "Was ist ein KI-Agent?"}]
+    messages=[{"role": "user", "content": "What is an AI agent?"}]
 )
 print(response.choices[0].message.content)
 ```
 
 ---
 
-## Nächster Schritt
+## Next step
 
-→ [Empfehlungen nach Mac-Modell](03-mac-recommendations.md)
+→ [Mac-specific recommendations](03-mac-recommendations.md)

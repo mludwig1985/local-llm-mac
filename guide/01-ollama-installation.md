@@ -1,108 +1,107 @@
-# Ollama installieren — GUI & CLI
+# Installing Ollama — GUI & CLI
 
-Ollama ist das Fundament: Es lädt Modelle herunter, verwaltet sie und stellt
-eine lokale API bereit. Alles andere (Chat-Oberflächen, Skripte, eigene
-Agenten) baut darauf auf.
+Ollama is the foundation: it downloads models, manages them, and exposes a
+local API. Everything else — chat interfaces, scripts, custom agents — builds
+on top of it.
 
 ---
 
-## Option A — GUI-App (empfohlen für Einsteiger)
+## Option A — GUI App (recommended for most users)
 
-Die offiziellen App ist der einfachste Weg. Sie installiert automatisch den
-`ollama`-Befehl im Terminal und läuft als Menu-Bar-App im Hintergrund.
+The official app is the easiest path. It automatically installs the `ollama`
+command in Terminal and runs as a menu bar app in the background.
 
-### Schritte
+### Steps
 
-1. Gehe zu **[ollama.com/download](https://ollama.com/download)**
-2. Klicke **"Download for macOS"**
-3. Die heruntergeladene `.zip`-Datei öffnen → `Ollama.app` extrahiert sich
-4. `Ollama.app` in den **Programme**-Ordner ziehen
-5. App starten — beim ersten Start erscheint ein Einrichtungsassistent
+1. Go to **[ollama.com/download](https://ollama.com/download)**
+2. Click **"Download for macOS"**
+3. Open the downloaded `.zip` — `Ollama.app` extracts automatically
+4. Drag `Ollama.app` to your **Applications** folder
+5. Launch the app — a setup wizard appears on first run
 
-### Was passiert beim ersten Start
+### What happens on first launch
 
-- Ollama fragt, ob es den `ollama`-Befehl in den Terminal-PATH installieren
-  darf → **"Install Command Line Tools"** bestätigen
-- Ein kleines Lama-Icon erscheint in der Menüleiste — das zeigt, dass
-  Ollama im Hintergrund läuft und bereit ist
-- Der API-Server startet automatisch auf `http://localhost:11434`
+- Ollama asks to install the `ollama` command into your Terminal PATH →
+  confirm **"Install Command Line Tools"**
+- A small llama icon appears in the menu bar — Ollama is running in the
+  background and ready
+- The API server starts automatically on `http://localhost:11434`
 
-### Menu-Bar-App nutzen
+### Menu bar app
 
-| Aktion | Weg |
+| Action | How |
 |--------|-----|
-| Ollama starten | App aus Programme öffnen |
-| Status prüfen | Lama-Icon in Menüleiste |
-| Beenden | Lama-Icon → "Quit Ollama" |
-| Autostart | Läuft automatisch beim Login (Standard) |
+| Start Ollama | Open app from Applications |
+| Check status | Llama icon in menu bar |
+| Quit | Llama icon → "Quit Ollama" |
+| Auto-start | Starts at login by default |
 
 ---
 
-## Option B — Homebrew (empfohlen für Entwickler)
+## Option B — Homebrew (recommended for developers)
 
-Für alle die Homebrew bereits nutzen — ein Befehl genügt:
+If you already use Homebrew, one command does it all:
 
 ```bash
+# Install the full GUI app (recommended):
+brew install --cask ollama
+
+# Or install CLI-only (no menu bar app):
 brew install ollama
-```
-
-Nach der Installation als Dienst starten:
-
-```bash
 brew services start ollama
 ```
 
-> **Hinweis:** Die Homebrew-Version enthält keine GUI-App, nur die
-> Kommandozeile. Dafür lässt sie sich einfach updaten: `brew upgrade ollama`.
+> **Note:** The Homebrew Cask installs the same GUI app as the DMG download.
+> Update later with `brew upgrade --cask ollama`.
 
 ---
 
-## CLI-Grundbefehle
+## CLI essentials
 
-Nach der Installation steht der `ollama`-Befehl im Terminal zur Verfügung:
+Once installed, the `ollama` command is available in Terminal:
 
 ```bash
-# Version prüfen
+# Check version
 ollama --version
 
-# Modell herunterladen (ohne zu starten)
+# Download a model (without starting it)
 ollama pull qwen3:8b
 
-# Modell herunterladen und direkt starten
+# Download and run a model immediately
 ollama run qwen3:8b
 
-# Laufendes Modell beenden
+# Exit a running model session
 /bye
 
-# Alle installierten Modelle anzeigen
+# List all installed models
 ollama list
 
-# Modell entfernen
+# Remove a model
 ollama rm qwen3:8b
 
-# API-Status prüfen
+# Check API status
 curl http://localhost:11434
 ```
 
 ---
 
-## Open WebUI — Chat-Oberfläche im Browser
+## Open WebUI — Browser chat interface
 
-Die Kommandozeile reicht zum Testen, aber für den täglichen Gebrauch ist
-**Open WebUI** deutlich komfortabler: Es ist eine ChatGPT-ähnliche
-Oberfläche, die direkt auf deinen lokalen Ollama-Modellen läuft.
+The command line works fine for testing, but for daily use **Open WebUI** is
+far more comfortable: it's a ChatGPT-style interface that runs entirely on
+your local Ollama models.
 
-**Was Open WebUI bietet:**
-- Chat-Oberfläche wie ChatGPT
-- Gesprächshistorie
-- Mehrere Modelle gleichzeitig verfügbar
-- Datei-Upload (PDFs, Bilder)
-- Kein Account, keine Cloud, alles lokal
+**What Open WebUI offers:**
+- Full chat interface like ChatGPT
+- Conversation history
+- Switch between multiple models
+- File upload (PDFs, images)
+- No account, no cloud — everything local
 
-### Installation mit Docker (einfachste Methode)
+### Install with Docker (easiest method)
 
-Voraussetzung: [Docker Desktop](https://www.docker.com/products/docker-desktop)
-ist installiert und läuft.
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop) to
+be installed and running.
 
 ```bash
 docker run -d \
@@ -114,13 +113,12 @@ docker run -d \
   ghcr.io/open-webui/open-webui:main
 ```
 
-Danach im Browser: **http://localhost:3000**
+Then open: **http://localhost:3000**
 
-Beim ersten Aufruf einen Admin-Account anlegen (bleibt lokal, kein echter
-Account). Open WebUI erkennt Ollama automatisch und zeigt alle installierten
-Modelle.
+On first visit, create a local admin account (stays local, no real account
+needed). Open WebUI auto-detects Ollama and shows all installed models.
 
-### Automatische Installation
+### Automated install
 
 ```bash
 bash scripts/install-open-webui.sh
@@ -128,18 +126,18 @@ bash scripts/install-open-webui.sh
 
 ---
 
-## Ollama updaten
+## Updating Ollama
 
 ```bash
-# GUI-App: Im Menüleisten-Icon → "Check for Updates"
-# oder manuell neu von ollama.com/download herunterladen
+# GUI app: Llama icon in menu bar → "Check for Updates"
+# or re-download from ollama.com/download
 
-# Homebrew:
-brew upgrade ollama
+# Homebrew Cask:
+brew upgrade --cask ollama
 ```
 
 ---
 
-## Nächster Schritt
+## Next step
 
-→ [Qwen-Modelle verstehen](02-qwen-models.md)
+→ [Understanding Qwen3 models](02-qwen-models.md)
