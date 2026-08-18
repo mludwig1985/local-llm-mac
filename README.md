@@ -35,16 +35,21 @@ That's it. The script detects how much RAM your Mac has, recommends the right Qw
 
 | Mac | RAM | Recommended Model | Command |
 |-----|-----|-------------------|---------|
-| MacBook Air M1/M2/M3 | 8 GB | Qwen3-1.7B | `ollama run qwen3:1.7b` |
-| MacBook Air M1/M2/M3 | 16 GB | Qwen3-4B | `ollama run qwen3:4b` |
+| MacBook Air M1/M2/M3/M4 | 8 GB | Qwen3-1.7B | `ollama run qwen3:1.7b` |
+| MacBook Air M1/M2/M3 | 16 GB | Qwen3-8B | `ollama run qwen3:8b` |
 | MacBook Pro M2/M3/M4 | 16 GB | **Qwen3-8B** ⭐ | `ollama run qwen3:8b` |
-| MacBook Pro M3/M4 Pro | 18–24 GB | **Qwen3-14B** ⭐ | `ollama run qwen3:14b` |
-| MacBook Pro M3/M4 Max | 36–128 GB | **Qwen3-30B-A3B** ⭐ | `ollama run qwen3:30b-a3b` |
-| Mac Mini M4 | 16 GB | Qwen3-8B | `ollama run qwen3:8b` |
-| Mac Mini M4 Pro | 24–32 GB | Qwen3-14B | `ollama run qwen3:14b` |
-| Mac Studio M4 Max | 64–96 GB | Qwen3-32B | `ollama run qwen3:32b` |
+| MacBook Pro M3/M4 Pro | 24 GB | **Qwen3-14B** ⭐ | `ollama run qwen3:14b` |
+| MacBook Pro M3/M4 Pro | 48 GB | **Qwen3-30B-A3B** ⭐ | `ollama run qwen3:30b-a3b` |
+| MacBook Pro M3/M4 Max | 36–48 GB | Qwen3-30B-A3B | `ollama run qwen3:30b-a3b` |
+| MacBook Pro M3/M4 Max | 64–128 GB | **Qwen3-32B Q8** ⭐ | `ollama run qwen3:32b-q8_0` |
+| Mac Mini M4 | 16–24 GB | Qwen3-8B | `ollama run qwen3:8b` |
+| Mac Mini M4 Pro | 24–48 GB | Qwen3-30B-A3B | `ollama run qwen3:30b-a3b` |
+| Mac Studio M4 Max | 32–128 GB | Qwen3-32B Q8 | `ollama run qwen3:32b-q8_0` |
+| Mac Studio / Mac Pro Ultra | 192 GB+ | Qwen3-235B-A22B | `ollama run qwen3:235b-a22b` |
 
-> **Apple Silicon advantage:** Unified memory means RAM and GPU share the same pool — a MacBook Pro M4 Max with 48 GB outperforms a dedicated GPU card with 24 GB VRAM for local AI inference.
+> **Apple Silicon advantage:** Unified memory means RAM and GPU share the same pool — a 64 GB Mac outperforms a dedicated 24 GB GPU card for local AI inference.
+
+> ⚠️ `qwen3:235b-a22b` requires ~144 GB RAM — it does **not** fit in 128 GB.
 
 ---
 
@@ -52,7 +57,7 @@ That's it. The script detects how much RAM your Mac has, recommends the right Qw
 
 - **macOS 13 Ventura or newer**
 - **Apple Silicon (M1–M5)** recommended — Intel Macs work but are significantly slower
-- Enough free disk space for the model download (1.4 GB – 20 GB depending on model)
+- Free disk space: 1.4 GB (smallest model) up to 35 GB (32B Q8) — the installer tells you exactly how much
 - Internet connection for the initial download
 
 No Python, no conda, no virtual environments. Ollama handles everything.
@@ -63,7 +68,7 @@ No Python, no conda, no virtual environments. Ollama handles everything.
 
 ```
 local-llm-mac/
-├── guide/
+├── docs/
 │   ├── 01-ollama-installation.md   # Ollama GUI app, CLI, Homebrew + Open WebUI
 │   ├── 02-qwen-models.md           # All Qwen3 models, sizes, quantization explained
 │   └── 03-mac-recommendations.md   # Detailed per-Mac model recommendations
@@ -73,20 +78,20 @@ local-llm-mac/
     └── install-open-webui.sh       # Install Open WebUI (Docker required)
 ```
 
-### Guides
+### Docs
 
 | Guide | Contents |
 |-------|----------|
-| [01 — Ollama Installation](guide/01-ollama-installation.md) | GUI app vs CLI, Homebrew, Open WebUI setup |
-| [02 — Qwen3 Models](guide/02-qwen-models.md) | All model sizes, quantization, API usage, Thinking mode |
-| [03 — Mac Recommendations](guide/03-mac-recommendations.md) | Per-Mac RAM guide, MoE vs Dense explained |
+| [01 — Ollama Installation](docs/01-ollama-installation.md) | GUI app vs CLI, Homebrew, Open WebUI setup, RAM management |
+| [02 — Qwen3 Models](docs/02-qwen-models.md) | All model sizes, quantization, API usage, Thinking mode |
+| [03 — Mac Recommendations](docs/03-mac-recommendations.md) | Per-Mac RAM guide, MoE vs Dense explained |
 
 ### Scripts
 
 | Script | What it does |
 |--------|--------------|
-| `scripts/install.sh` | **Start here.** Detects your RAM, recommends a model, installs Ollama + pulls model, optionally sets up Open WebUI |
-| `scripts/install-ollama.sh` | Installs Ollama only (via Homebrew if available, otherwise official installer) |
+| `scripts/install.sh` | **Start here.** Detects RAM, recommends a model, installs Ollama + pulls model, optionally sets up Open WebUI |
+| `scripts/install-ollama.sh` | Installs Ollama only (via Homebrew Cask if available, otherwise opens download page) |
 | `scripts/install-open-webui.sh` | Installs Open WebUI via Docker for a ChatGPT-style browser interface |
 
 ---
@@ -120,8 +125,8 @@ ollama run qwen3:8b
 # List installed models
 ollama list
 
-# Pull another model
-ollama pull qwen3:14b
+# Unload a model from RAM when done (keeps it installed)
+ollama stop qwen3:8b
 ```
 
 **Open WebUI** (if installed): open [http://localhost:3000](http://localhost:3000) in your browser for a full chat interface with conversation history, file uploads, and model switching.

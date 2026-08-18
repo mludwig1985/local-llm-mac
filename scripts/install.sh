@@ -105,7 +105,7 @@ echo -e "  Note:   ${RECOMMENDED_NOTE}"
 echo ""
 
 # ── Check existing Qwen installations ───────────────────────
-EXISTING_QWEN=$(ollama list 2>/dev/null | grep -i "qwen" | awk '{printf "  • %-30s %s\n", $1, $3}' || true)
+EXISTING_QWEN=$(ollama list 2>/dev/null | grep -i "qwen" | awk '{printf "  • %-30s %s %s\n", $1, $3, $4}' || true)
 
 if [[ -n "$EXISTING_QWEN" ]]; then
   header "Qwen models already on this Mac"
@@ -216,7 +216,7 @@ fi
 # ── Step 2: Pull the Qwen model ──────────────────────────────
 header "Step 2: Download ${MODEL}"
 
-if ollama list 2>/dev/null | grep -q "${MODEL}"; then
+if ollama list 2>/dev/null | awk '{print $1}' | grep -qx "${MODEL}"; then
   success "${MODEL} is already installed."
 else
   info "Downloading ${MODEL} — this may take a few minutes depending on your connection..."
