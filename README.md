@@ -1,0 +1,137 @@
+# 🦙 Local LLM on Mac — Ollama + Qwen3 Setup Guide
+
+> **Run powerful AI models locally on your Mac — no cloud, no API costs, no data leaving your device.**
+
+A complete guide and automated installer for running [Qwen3](https://ollama.com/library/qwen3) models locally on macOS via [Ollama](https://ollama.com). Includes step-by-step documentation, Mac-specific model recommendations, and shell scripts that handle everything automatically.
+
+---
+
+## What you get
+
+- **Qwen3 running locally** — state-of-the-art open-weight model from Alibaba
+- **Ollama** — the easiest way to run LLMs on Mac (menu bar app + CLI)
+- **Open WebUI** — a ChatGPT-style browser interface for your local models
+- **Zero ongoing costs** — no subscription, no API key, no rate limits
+
+---
+
+## Quick Start
+
+```bash
+# Clone the repo
+git clone https://github.com/mludwig1985/local-llm-mac.git
+cd local-llm-mac
+
+# Run the interactive installer
+# → detects your Mac's RAM, recommends the right model, installs everything
+bash scripts/install.sh
+```
+
+That's it. The script detects how much RAM your Mac has, recommends the right Qwen3 model, installs Ollama, and pulls the model. You'll be chatting with a local AI in minutes.
+
+---
+
+## Which Qwen3 model runs on which Mac?
+
+| Mac | RAM | Recommended Model | Command |
+|-----|-----|-------------------|---------|
+| MacBook Air M1/M2/M3 | 8 GB | Qwen3-1.7B | `ollama run qwen3:1.7b` |
+| MacBook Air M1/M2/M3 | 16 GB | Qwen3-4B | `ollama run qwen3:4b` |
+| MacBook Pro M2/M3/M4 | 16 GB | **Qwen3-8B** ⭐ | `ollama run qwen3:8b` |
+| MacBook Pro M3/M4 Pro | 18–24 GB | **Qwen3-14B** ⭐ | `ollama run qwen3:14b` |
+| MacBook Pro M3/M4 Max | 36–128 GB | **Qwen3-30B-A3B** ⭐ | `ollama run qwen3:30b-a3b` |
+| Mac Mini M4 | 16 GB | Qwen3-8B | `ollama run qwen3:8b` |
+| Mac Mini M4 Pro | 24–32 GB | Qwen3-14B | `ollama run qwen3:14b` |
+| Mac Studio M4 Max | 64–96 GB | Qwen3-32B | `ollama run qwen3:32b` |
+
+> **Apple Silicon advantage:** Unified memory means RAM and GPU share the same pool — a MacBook Pro M4 Max with 48 GB outperforms a dedicated GPU card with 24 GB VRAM for local AI inference.
+
+---
+
+## Prerequisites
+
+- **macOS 13 Ventura or newer**
+- **Apple Silicon (M1–M5)** recommended — Intel Macs work but are significantly slower
+- Enough free disk space for the model download (1.4 GB – 20 GB depending on model)
+- Internet connection for the initial download
+
+No Python, no conda, no virtual environments. Ollama handles everything.
+
+---
+
+## What's inside
+
+```
+local-llm-mac/
+├── guide/
+│   ├── 01-ollama-installation.md   # Ollama GUI app, CLI, Homebrew + Open WebUI
+│   ├── 02-qwen-models.md           # All Qwen3 models, sizes, quantization explained
+│   └── 03-mac-recommendations.md   # Detailed per-Mac model recommendations
+└── scripts/
+    ├── install.sh                  # Interactive all-in-one installer
+    ├── install-ollama.sh           # Install Ollama only
+    └── install-open-webui.sh       # Install Open WebUI (Docker required)
+```
+
+### Guides
+
+| Guide | Contents |
+|-------|----------|
+| [01 — Ollama Installation](guide/01-ollama-installation.md) | GUI app vs CLI, Homebrew, Open WebUI setup |
+| [02 — Qwen3 Models](guide/02-qwen-models.md) | All model sizes, quantization, API usage, Thinking mode |
+| [03 — Mac Recommendations](guide/03-mac-recommendations.md) | Per-Mac RAM guide, MoE vs Dense explained |
+
+### Scripts
+
+| Script | What it does |
+|--------|--------------|
+| `scripts/install.sh` | **Start here.** Detects your RAM, recommends a model, installs Ollama + pulls model, optionally sets up Open WebUI |
+| `scripts/install-ollama.sh` | Installs Ollama only (via Homebrew if available, otherwise official installer) |
+| `scripts/install-open-webui.sh` | Installs Open WebUI via Docker for a ChatGPT-style browser interface |
+
+---
+
+## Qwen3: Why this model family?
+
+Qwen3 is released under **Apache 2.0** — fully open, commercial use allowed.
+
+- **Thinking mode** built in: prefix your prompt with `/think` for step-by-step reasoning (like OpenAI o1)
+- **256K context window** on several models — useful for long documents and codebases
+- **MoE architecture** on the 30B model: full 30B quality at 3B inference speed
+- Strong benchmark scores across coding, math, multilingual, and reasoning tasks
+
+---
+
+## After installation
+
+```bash
+# Start a chat session
+ollama run qwen3:8b
+
+# Use Thinking mode for complex questions
+/think Explain the difference between TCP and UDP in detail
+
+# Disable Thinking for quick answers
+/no_think What is the capital of France?
+
+# Exit
+/bye
+
+# List installed models
+ollama list
+
+# Pull another model
+ollama pull qwen3:14b
+```
+
+**Open WebUI** (if installed): open [http://localhost:3000](http://localhost:3000) in your browser for a full chat interface with conversation history, file uploads, and model switching.
+
+---
+
+## License
+
+MIT — do whatever you want with it.
+
+---
+
+*Maintained by [Mathias Ludwig](https://mathias-ludwig.tech)*
