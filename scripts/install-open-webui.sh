@@ -75,7 +75,7 @@ docker run -d \
 
 # Wait until reachable
 info "Waiting for Open WebUI to start..."
-for i in $(seq 1 30); do
+for _ in $(seq 1 30); do
   if curl -sf http://localhost:3000 &>/dev/null; then
     break
   fi
