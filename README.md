@@ -1,4 +1,8 @@
-# 🦙 Local LLM on Mac — Ollama + Qwen3 Setup Guide
+<p align="center">
+  <img src="header.jpg" alt="Qwen + Ollama on Mac" width="700">
+</p>
+
+# Local LLM on Mac — Ollama + Qwen3 Setup Guide
 
 > **Run powerful AI models locally on your Mac — no cloud, no API costs, no data leaving your device.**
 
